@@ -1,0 +1,47 @@
+--1. ООООООООООООО, какое задание
+ SELECT ProductName, Category
+FROM Products
+WHERE SupplierName IN ('ООО "Паньки"', 'ООО «Какие люди»');
+
+--2.АКМ (Автомат Калашникова Модернизированный?)
+ SELECT ProductName, SupplierName, ManufacturerName, Category
+FROM Products
+WHERE NOT ManufacturerName LIKE '%[АКМ]%' AND Category != 'Крупы';
+
+--3. Поставщики лучших товаров на планете Земля Марс
+ SELECT p.ProductName, p.Category, p.SupplierName, m.Country AS ManufacturerCountry
+FROM Products p
+JOIN Manufacturers m ON p.ManufacturerID = m.ManufacturerID
+WHERE m.Country NOT IN ('Украина', 'Польша') AND p.DeliveryPrice < 50 AND p.DeliveryDate >= '2023-10-19';
+
+--4. Дети и алкаши
+ SELECT p.ProductName, p.Category, p.SupplierName, m.ManufacturerName, s.QuantitySold
+FROM Products p
+JOIN Sales s ON p.ProductID = s.ProductID
+JOIN Manufacturers m ON p.ManufacturerID = m.ManufacturerID
+WHERE (p.Category = 'Кондитерские' OR p.Category = 'Безалкогольные') AND s.QuantitySold > 100;
+
+
+--5. Лучшие поставщики планеты Земля Марс
+ SELECT p.ProductName, p.SupplierName, p.Category, s.DeliveryDate, SUM(p.ProductPrice * s.Quantity) AS TotalCost
+FROM Products p
+JOIN Suppliers s ON p.SupplierID = s.SupplierID
+WHERE p.SupplierName IN ('Мужик1', 'Мужик2', 'Мужик3')
+GROUP BY p.ProductName, p.SupplierName, p.Category, s.DeliveryDate
+ORDER BY p.ProductName;
+
+--6. Полный порядок
+SELECT p.ProductName, m.ManufacturerName, CONCAT(m.Country, ', ', m.City, ', ', m.Street) AS ManufacturerAddress,
+       p.Category, s.SaleDate, SUM(p.ProductPrice * s.Quantity) AS TotalSalesCost
+FROM Products p
+JOIN Manufacturers m ON p.ManufacturerID = m.ManufacturerID
+JOIN Sales s ON p.ProductID = s.ProductID
+WHERE m.ManufacturerName NOT IN ('Создатель_Сервера_Майнкрафт1', 'Создатель_Сервера_Майнкрафт2')
+GROUP BY p.ProductName, m.ManufacturerName, ManufacturerAddress, p.Category, s.SaleDate
+ORDER BY TotalSalesCost DESC;
+
+
+
+
+
+
